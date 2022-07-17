@@ -18,22 +18,24 @@ func main() {
 
 // sceneSDF returns the root SDF of the scene.
 func sceneSDF() sdfviewergo.SDF {
-	return &SampleSDF{CubeHalfSide: 0.99}
+	return &SampleSDF{id: 0, name: "test-root-cube", cubeHalfSide: 0.99}
 }
 
 // ######################## START OF EXAMPLE MANUAL SDF IMPLEMENTATION ########################
 
 type SampleSDF struct {
-	CubeHalfSide float32 // Cube side length
+	id           uint32
+	name         string
+	cubeHalfSide float32 // Cube side length
 }
 
-func (s SampleSDF) BoundingBox() [2][3]float32 {
+func (s *SampleSDF) BoundingBox() [2][3]float32 {
 	return [2][3]float32{{-1, -1, -1}, {1, 1, 1}}
 }
 
-func (s SampleSDF) Sample(point [3]float32, distanceOnly bool) (sample sdfviewergo.SDFSample) {
+func (s *SampleSDF) Sample(point [3]float32, distanceOnly bool) (sample sdfviewergo.SDFSample) {
 	// Cube SDF
-	sample.Distance = maxF32(maxF32(absF32(point[0]), absF32(point[1])), absF32(point[2])) - s.CubeHalfSide
+	sample.Distance = maxF32(maxF32(absF32(point[0]), absF32(point[1])), absF32(point[2])) - s.cubeHalfSide
 	if !distanceOnly {
 		sample.Color = [3]float32{sinF32(point[0] * 2.0), (point[1] + 1.0) / 2.0, (point[2] + 1.0) / 2.0}
 		sample.Metallic = modF32(point[0], 1.0)
@@ -41,6 +43,21 @@ func (s SampleSDF) Sample(point [3]float32, distanceOnly bool) (sample sdfviewer
 		sample.Occlusion = modF32(point[2], 1.0)
 	}
 	return
+}
+
+func (s *SampleSDF) Children() []sdfviewergo.SDF {
+	if s.id == 0 { // Fake, just for testing...
+		return []sdfviewergo.SDF{&SampleSDF{id: 1, name: "test-fake-child", cubeHalfSide: 0.51}}
+	}
+	return []sdfviewergo.SDF{}
+}
+
+func (s *SampleSDF) ID() uint32 {
+	return s.id
+}
+
+func (s *SampleSDF) Name() string {
+	return s.name
 }
 
 func sinF32(f float32) float32 {
