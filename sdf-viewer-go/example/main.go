@@ -6,27 +6,32 @@ import (
 	"math"
 )
 
+// BUILD COMMAND IS IN `func main()`
+
 func init() {
 	// This is the only function you need to call to initialize the SDF Viewer.
 	sdfviewergo.SetRootSDF(sceneSDF())
 }
 
 func main() {
-	fmt.Println("This is not an executable. Compile this with `tinygo build -o example.wasm -target wasi -opt 2 -x -no-debug .` and " +
-		"use the SDF Viewer app (github.com/Yeicor/sdf-viewer) to visualize the SDF.")
+	fmt.Println("This is not an executable. Compile this with `" +
+		"tinygo build -o example.wasm -target wasi -opt 2 -x -no-debug ." +
+		"` and use the SDF Viewer app (github.com/Yeicor/sdf-viewer) to visualize the SDF.")
 }
 
 // sceneSDF returns the root SDF of the scene.
 func sceneSDF() sdfviewergo.SDF {
-	return &SampleSDF{id: 0, name: "test-root-cube", cubeHalfSide: 0.99}
+	return &SampleSDF{id: 0, name: "test-root-cube", cubeHalfSide: 0.99, changed: false}
 }
 
 // ######################## START OF EXAMPLE MANUAL SDF IMPLEMENTATION ########################
+// NOTE: Other modules of this repo have better examples of how to implement SDFs.
 
 type SampleSDF struct {
 	id           uint32
 	name         string
 	cubeHalfSide float32 // Cube side length
+	changed      bool    // Whether any param changed, affecting the whole SDF
 }
 
 func (s *SampleSDF) BoundingBox() [2][3]float32 {
@@ -47,7 +52,7 @@ func (s *SampleSDF) Sample(point [3]float32, distanceOnly bool) (sample sdfviewe
 
 func (s *SampleSDF) Children() []sdfviewergo.SDF {
 	if s.id == 0 { // Fake, just for testing...
-		return []sdfviewergo.SDF{&SampleSDF{id: 1, name: "test-fake-child", cubeHalfSide: 0.51}}
+		return []sdfviewergo.SDF{&SampleSDF{id: 1, name: "test-fake-child", cubeHalfSide: 0.51, changed: false}}
 	}
 	return []sdfviewergo.SDF{}
 }
@@ -59,6 +64,45 @@ func (s *SampleSDF) ID() uint32 {
 func (s *SampleSDF) Name() string {
 	return s.name
 }
+
+func (s *SampleSDF) Parameters() []sdfviewergo.SDFParam {
+	if s.id != 0 {
+		return []sdfviewergo.SDFParam{}
+	}
+	return []sdfviewergo.SDFParam{
+		{
+			ID:   0,
+			Name: "Cube half side",
+			Kind: sdfviewergo.SDFParamKindFloat{
+				Min:  0.01,
+				Max:  0.99,
+				Step: 0.01,
+			},
+			Value:       s.cubeHalfSide, // float32, as described
+			Description: "Half side length of the cube",
+		},
+	}
+}
+
+func (s *SampleSDF) SetParameter(paramId uint32, value sdfviewergo.SDFParamValue) error {
+	if paramId == 0 {
+		s.cubeHalfSide = value.(float32)
+		s.changed = true
+		return nil
+	}
+	return fmt.Errorf("unknown parameter id: %d", paramId)
+}
+
+func (s *SampleSDF) Changed() sdfviewergo.ChangedAABB {
+	changed := s.changed
+	s.changed = false
+	return sdfviewergo.ChangedAABB{
+		Changed: changed,
+		AABB:    s.BoundingBox(),
+	}
+}
+
+// ######################## END OF EXAMPLE MANUAL SDF IMPLEMENTATION ########################
 
 func sinF32(f float32) float32 {
 	return float32(math.Sin(float64(f)))
@@ -85,5 +129,3 @@ func absF32(v float32) float32 {
 	}
 	return v
 }
-
-// ######################## END OF EXAMPLE MANUAL SDF IMPLEMENTATION ########################
