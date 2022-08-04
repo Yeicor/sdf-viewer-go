@@ -1,3 +1,6 @@
 go 1.18
 
-use ./sdf-viewer-go
+use (
+	./sdf-viewer-go
+	./sdf-viewer-go-sdfx
+)

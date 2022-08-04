@@ -5,6 +5,15 @@ import (
 	"unsafe"
 )
 
+// SetRootSDF registers the root SDF, overriding any previous value.
+func SetRootSDF(sdf SDF) {
+	// Reset, in case this is called multiple times
+	nextSDFID = 0
+	availableSDFs = map[uint32]SDF{}
+	// Also register all children, recursively.
+	registerSDFAndChildren(sdf)
+}
+
 // SDF provides access to the Signed Distance Function data. Keep in sync with the SDF Viewer app.
 // Comments may be outdated, so check the original SDF Viewer app for more details.
 type SDF interface {
@@ -20,9 +29,6 @@ type SDF interface {
 	// Children returns the list of sub-SDFs that are directly children of this node.
 	// Note that modifications to the parameters of the returned children MUST affect this node.
 	Children() (children []SDF)
-
-	// ID returns a unique ID within this SDF hierarchy. Root must return 0.
-	ID() uint32
 
 	// Name returns a nice display Name for the SDF, which does not need to be unique in the hierarchy.
 	Name() string

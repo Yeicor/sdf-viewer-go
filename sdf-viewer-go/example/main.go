@@ -8,6 +8,7 @@ import (
 
 // BUILD COMMAND IS IN `func main()`
 
+//export init
 func init() {
 	// This is the only function you need to call to initialize the SDF Viewer.
 	sdfviewergo.SetRootSDF(sceneSDF())
@@ -21,14 +22,16 @@ func main() {
 
 // sceneSDF returns the root SDF of the scene.
 func sceneSDF() sdfviewergo.SDF {
-	return &SampleSDF{id: 0, name: "test-root-cube", cubeHalfSide: 0.99, changed: false}
+	return &SampleSDF{isRoot: true, name: "test-root-cube", cubeHalfSide: 0.99, changed: false,
+		child: &SampleSDF{isRoot: false, name: "test-fake-child", cubeHalfSide: 0.51, changed: false}}
 }
 
 // ######################## START OF EXAMPLE MANUAL SDF IMPLEMENTATION ########################
 // NOTE: Other modules of this repo have better examples of how to implement SDFs.
 
 type SampleSDF struct {
-	id           uint32
+	isRoot       bool
+	child        *SampleSDF // May be nil
 	name         string
 	cubeHalfSide float32 // Cube side length
 	changed      bool    // Whether any param changed, affecting the whole SDF
@@ -51,14 +54,10 @@ func (s *SampleSDF) Sample(point [3]float32, distanceOnly bool) (sample sdfviewe
 }
 
 func (s *SampleSDF) Children() []sdfviewergo.SDF {
-	if s.id == 0 { // Fake, just for testing...
-		return []sdfviewergo.SDF{&SampleSDF{id: 1, name: "test-fake-child", cubeHalfSide: 0.51, changed: false}}
+	if s.child != nil { // Fake, just for testing...
+		return []sdfviewergo.SDF{s.child}
 	}
 	return []sdfviewergo.SDF{}
-}
-
-func (s *SampleSDF) ID() uint32 {
-	return s.id
 }
 
 func (s *SampleSDF) Name() string {
@@ -66,7 +65,7 @@ func (s *SampleSDF) Name() string {
 }
 
 func (s *SampleSDF) Parameters() []sdfviewergo.SDFParam {
-	if s.id != 0 {
+	if !s.isRoot {
 		return []sdfviewergo.SDFParam{}
 	}
 	return []sdfviewergo.SDFParam{

@@ -8,3 +8,6 @@ Check out the [SDF Viewer App's README](https://github.com/Yeicor/sdf-viewer) fo
 It supports:
 
 - Pure Go: [example](sdf-viewer-go/example/main.go).
+- [SDFX](https://github.com/deadsy/sdfx): [example](sdf-viewer-go-sdfx/example/main.go).
+
+## Demo

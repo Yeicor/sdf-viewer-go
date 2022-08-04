@@ -1,6 +1,5 @@
 package sdf_viewer_go
 
-import "C"
 import (
 	"math"
 	"unsafe"
@@ -8,18 +7,13 @@ import (
 
 // availableSDFs is the exported SDF hierarchy implementations.
 var availableSDFs map[uint32]SDF
+var nextSDFID uint32
 
-// SetRootSDF registers the root SDF, overriding any previous Value.
-func SetRootSDF(sdf SDF) {
-	availableSDFs = map[uint32]SDF{}
-	// Also register all children, recursively.
-	registerSDFAndChildren(sdf)
-}
-
-func registerSDFAndChildren(sdf SDF) {
-	//fmt.Printf("registerSDFAndChildren(%d)\n", sdf.ID())
-	availableSDFs[sdf.ID()] = sdf
-	for _, child := range sdf.Children() {
+func registerSDFAndChildren(s SDF) {
+	//fmt.Printf("registerSDFAndChildren(%d)\n", nextSDFID)
+	availableSDFs[nextSDFID] = s
+	nextSDFID++
+	for _, child := range s.Children() {
 		registerSDFAndChildren(child)
 	}
 }
@@ -32,7 +26,8 @@ func getSDFOrPanic(sdfID uint32) SDF {
 }
 
 //export bounding_box
-func boundingBox(sdfID uint32) *[2][3]float32 {
+//goland:noinspection GoSnakeCaseUsage
+func bounding_box(sdfID uint32) *[2][3]float32 {
 	//fmt.Printf("-> BoundingBox(%d)\n", sdfID)
 	minMax := getSDFOrPanic(sdfID).BoundingBox()
 	//fmt.Printf("<- BoundingBox(%d) <- (%v, %v)\n", sdfID, minMax[0], minMax[1])
@@ -57,7 +52,23 @@ func children(sdfID uint32) *pointerLength {
 	}
 	childrenIDs := make([]uint32, len(children))
 	for i, child := range children {
-		childrenIDs[i] = child.ID()
+		var childID uint32
+		var ok bool
+		for id, s := range availableSDFs { // Too slow?
+			if s == child {
+				childID = id
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			// NOTE: Children may change after a parameter update (or at any point in time),
+			// so register them again (with new IDs) if not found
+			// WARNING: A new struct instance on every Children call would cause a memory leak
+			registerSDFAndChildren(child)
+			childID = nextSDFID - 1
+		}
+		childrenIDs[i] = childID
 	}
 	res := pointerLength{Pointer: uintptr(unsafe.Pointer(&(childrenIDs[0]))), Length: uint32(uintptr(len(childrenIDs)) * unsafe.Sizeof(childrenIDs[0]))}
 	//fmt.Printf("<- Children(%d) <- (%v, %v)\n", sdfID, children.Pointer, children.Length)
@@ -102,7 +113,8 @@ func parameters(sdfID uint32) *pointerLength {
 }
 
 //export set_parameter
-func setParameter(sdfID, paramID, paramKindID, paramArg1, paramArg2 uint32) *setParameterRes {
+//goland:noinspection GoSnakeCaseUsage
+func set_parameter(sdfID, paramID, paramKindID, paramArg1, paramArg2 uint32) *setParameterRes {
 	//fmt.Printf("-> SetParameter(%d, %d, %d, %d, %d)\n", sdfID, paramID, paramKindID, paramArg1, paramArg2)
 	var paramVal SDFParamValue
 	switch paramKindID {
