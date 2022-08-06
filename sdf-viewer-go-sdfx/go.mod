@@ -2,8 +2,11 @@ module github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdfx
 
 go 1.18
 
+// Use the local version of sdf-viewer-go!
+replace github.com/Yeicor/sdf-viewer-go/sdf-viewer-go v0.0.0-20220806165416-860727f545f6 => ../sdf-viewer-go
+
 require (
-	github.com/Yeicor/sdf-viewer-go/sdf-viewer-go v0.0.0-20220801192746-85295752ded1
+	github.com/Yeicor/sdf-viewer-go/sdf-viewer-go v0.0.0-20220806165416-860727f545f6
 	github.com/deadsy/sdfx v0.0.0-20220508165057-718104295925
 	github.com/ojrac/opensimplex-go v1.0.2
 )
