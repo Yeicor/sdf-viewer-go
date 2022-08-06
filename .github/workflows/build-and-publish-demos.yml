@@ -3,7 +3,7 @@ name: Build and publish demos
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: write # Required to upload artifacts to releases (and pushing the version update)
