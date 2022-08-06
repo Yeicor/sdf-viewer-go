@@ -14,11 +14,12 @@ import (
 )
 
 var _ sdfviewergo.SDF = &SDF{}
+var _ sdf.SDF3 = &SDF{} // Also implements the sdf.SDF3 interface (for auto-discovery and compatibility with SDFX)
 
 // SDF wraps a sdf.SDF3 object to introduce the advanced features of the SDF Viewer App by implementing sdf_viewer_go.SDF.
 type SDF struct {
 	// SDF is the underlying SDF object from the SDFX library.
-	sdf.SDF3
+	SDF3 sdf.SDF3
 	// BoundingBoxCache is the cached bounding box of the SDF.
 	BoundingBoxCache *[2][3]float32
 	// MaterialFunc allows you to modify the material of the SDF for each sampled point.
@@ -56,7 +57,15 @@ func NewSDF(sdfCore sdf.SDF3) *SDF {
 	}
 }
 
-func (s *SDF) BoundingBox() (aabb [2][3]float32) {
+func (s *SDF) Evaluate(p sdf.V3) float64 {
+	return s.SDF3.Evaluate(p)
+}
+
+func (s *SDF) BoundingBox() sdf.Box3 {
+	return s.SDF3.BoundingBox()
+}
+
+func (s *SDF) AABB() (aabb [2][3]float32) {
 	if s.BoundingBoxCache != nil {
 		return *s.BoundingBoxCache
 	}
@@ -82,25 +91,6 @@ func (s *SDF) Sample(point [3]float32, distanceOnly bool) (sample sdfviewergo.SD
 			if len(children) == 0 { // Leaf nodes: pseudo-random color based on object name
 				sample = s.getBaseSample()      // Cached copy
 				sample.Distance = float32(dist) // Recover distance
-				// Add some noise for imperfections of the material properties along the surface
-				// WARNING: ~3 times slower...
-				//noise := s.getNoise() // Cached
-				//aabb := s.BoundingBox()
-				//mappedPoint := [3]float32{
-				//	15. * (point[0] - aabb[0][0]) / (aabb[1][0] - aabb[0][0]),
-				//	15. * (point[1] - aabb[0][1]) / (aabb[1][1] - aabb[0][1]),
-				//	15. * (point[2] - aabb[0][2]) / (aabb[1][2] - aabb[0][2]),
-				//}
-				//sample.Color[0] -= 0.01 * noise.Eval3(mappedPoint[0], mappedPoint[1], mappedPoint[2])
-				//sample.Color[1] -= 0.01 * noise.Eval3(mappedPoint[0], mappedPoint[1], mappedPoint[2])
-				//sample.Color[2] -= 0.01 * noise.Eval3(mappedPoint[0], mappedPoint[1], mappedPoint[2])
-				//sample.Roughness += -0.025 + 0.05*noise.Eval3(mappedPoint[0]+50, mappedPoint[1]+50, mappedPoint[2]+25)
-				//sample.Roughness = myClamp(sample.Roughness, 0., 1.)
-				//sample.Metallic += -0.025 + 0.05*noise.Eval3(mappedPoint[0]-50, mappedPoint[1]+50, mappedPoint[2]+25)
-				//sample.Metallic = myClamp(sample.Metallic, 0., 1.)
-				//sample.Occlusion += -0.025 + 0.05*noise.Eval3(mappedPoint[0]+50, mappedPoint[1]-50, mappedPoint[2]-25)
-				//sample.Occlusion = myClamp(sample.Occlusion, 0., 1.)
-				//log.Printf("Leaf node(%#v): %#v", point, sample)
 			} else { // Non-leaf nodes (union, intersection, difference, etc...): copy closest child material
 				closest := math.MaxFloat64
 				var closestChild *SDF
@@ -120,28 +110,19 @@ func (s *SDF) Sample(point [3]float32, distanceOnly bool) (sample sdfviewergo.SD
 	return
 }
 
-func myClamp(v float32, min float32, max float32) float32 {
-	if v < min {
-		return min
-	}
-	if v > max {
-		return max
-	}
-	return v
-}
-
 func (s *SDF) getBaseSample() sdfviewergo.SDFSample {
 	if s.BaseSample == nil {
 		name := s.Name()
 		seed := crc64.Checksum([]byte(name), crc64.MakeTable(crc64.ISO))
 		rng := rand.New(rand.NewSource(int64(seed)))
 		s.BaseSample = &sdfviewergo.SDFSample{}
-		s.BaseSample.Color[0] = rng.Float32()/2.0 + 0.5
-		s.BaseSample.Color[1] = rng.Float32()/2.0 + 0.5
-		s.BaseSample.Color[2] = rng.Float32()/2.0 + 0.5
+		s.BaseSample.Color[0] = rng.Float32()*0.5 + 0.5
+		s.BaseSample.Color[1] = rng.Float32()*0.5 + 0.5
+		s.BaseSample.Color[2] = rng.Float32()*0.5 + 0.5
 		s.BaseSample.Roughness = rng.Float32()
-		s.BaseSample.Metallic = rng.Float32()
+		s.BaseSample.Metallic = rng.Float32() * 0.5 // Too dark when set to max
 		s.BaseSample.Occlusion = rng.Float32()
+		//log.Println("Base sample for", name, ":", s.BaseSample)
 	}
 	return *s.BaseSample
 }
@@ -204,5 +185,28 @@ func (s *SDF) Changed() sdfviewergo.ChangedAABB {
 		s.ChildrenCache = nil // Re-compute children automatically, just in case.
 	}
 	s.ChangedAABB.Changed = false // Reset always (after being returned)
+	// Merge with changes from children!
+	for _, child := range s.Children() {
+		changed := child.Changed()
+		if changed.Changed {
+			res.Changed = true
+			res.AABB = aabbMerge(res.AABB, changed.AABB)
+		}
+	}
 	return res
+}
+
+func aabbMerge(aabb1, aabb2 [2][3]float32) [2][3]float32 {
+	return [2][3]float32{
+		{
+			float32(math.Min(float64(aabb1[0][0]), float64(aabb2[0][0]))),
+			float32(math.Min(float64(aabb1[0][1]), float64(aabb2[0][1]))),
+			float32(math.Min(float64(aabb1[0][2]), float64(aabb2[0][2]))),
+		},
+		{
+			float32(math.Max(float64(aabb1[1][0]), float64(aabb2[1][0]))),
+			float32(math.Max(float64(aabb1[1][1]), float64(aabb2[1][1]))),
+			float32(math.Max(float64(aabb1[1][2]), float64(aabb2[1][2]))),
+		},
+	}
 }

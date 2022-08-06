@@ -28,9 +28,9 @@ func getSDFOrPanic(sdfID uint32) SDF {
 //export bounding_box
 //goland:noinspection GoSnakeCaseUsage
 func bounding_box(sdfID uint32) *[2][3]float32 {
-	//fmt.Printf("-> BoundingBox(%d)\n", sdfID)
-	minMax := getSDFOrPanic(sdfID).BoundingBox()
-	//fmt.Printf("<- BoundingBox(%d) <- (%v, %v)\n", sdfID, minMax[0], minMax[1])
+	//fmt.Printf("-> AABB(%d)\n", sdfID)
+	minMax := getSDFOrPanic(sdfID).AABB()
+	//fmt.Printf("<- AABB(%d) <- (%v, %v)\n", sdfID, minMax[0], minMax[1])
 	return &minMax
 }
 

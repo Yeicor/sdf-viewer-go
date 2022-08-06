@@ -37,7 +37,7 @@ func (c *childrenCollectorWalker) Map(m reflect.Value) error {
 	return nil
 }
 
-func (c *childrenCollectorWalker) MapElem(m, k, v reflect.Value) error {
+func (c *childrenCollectorWalker) MapElem(_, k, v reflect.Value) error {
 	_ = c.checkValue(k)
 	_ = c.checkValue(v)
 	return nil
@@ -48,7 +48,7 @@ func (c *childrenCollectorWalker) Slice(value reflect.Value) error {
 	return nil
 }
 
-func (c *childrenCollectorWalker) SliceElem(i int, value reflect.Value) error {
+func (c *childrenCollectorWalker) SliceElem(_ int, value reflect.Value) error {
 	_ = c.checkValue(value)
 	return nil
 }
@@ -58,7 +58,7 @@ func (c *childrenCollectorWalker) Array(value reflect.Value) error {
 	return nil
 }
 
-func (c *childrenCollectorWalker) ArrayElem(i int, value reflect.Value) error {
+func (c *childrenCollectorWalker) ArrayElem(_ int, value reflect.Value) error {
 	_ = c.checkValue(value)
 	return nil
 }
@@ -84,16 +84,15 @@ func (c *childrenCollectorWalker) Exit(_ reflectwalktinygo.Location) error {
 	return nil
 }
 
-func (c *childrenCollectorWalker) PointerEnter(b bool, value reflect.Value) error {
+func (c *childrenCollectorWalker) PointerEnter(_ bool, _ reflect.Value) error {
 	//_ = c.checkValue(value)
 	return nil
 }
 
-func (c *childrenCollectorWalker) PointerExit(b bool) error {
+func (c *childrenCollectorWalker) PointerExit(_ bool) error {
 	return nil
 }
 
-var sdfAdvancedType = reflect.TypeOf((*sdf_viewer_go.SDF)(nil)).Elem()
 var sdfCoreType = reflect.TypeOf((*sdf.SDF3)(nil)).Elem()
 
 func (c *childrenCollectorWalker) checkValue(value reflect.Value) error {
@@ -102,19 +101,19 @@ func (c *childrenCollectorWalker) checkValue(value reflect.Value) error {
 		return nil // Ignore descendants of already found child node
 	}
 
-	// Look for the advanced SDF implementations and register them automatically as children.
-	advImpl, advImplOk := interfaceAndImplementsHint(value, sdfAdvancedType)
-	if s, ok := advImpl.(sdf_viewer_go.SDF); advImplOk != nil && *advImplOk || ok {
-		c.foundChild(s)
-		return reflectwalktinygo.SkipEntry // No more recursion
-	}
-
 	// Look for the core SDF implementations and register them automatically as children.
 	coreImpl, coreImplOk := interfaceAndImplementsHint(value, sdfCoreType)
 	if s, ok := coreImpl.(sdf.SDF3); coreImplOk != nil && *coreImplOk || ok {
-		// Automatic (default) conversion of core type to advanced type
-		c.foundChild(NewSDF(s))
-		return reflectwalktinygo.SkipEntry // No more recursion
+		if s2, ok := s.(sdf_viewer_go.SDF); ok {
+			// Already and advanced SDF, keep it
+			//log.Printf("Found ADVANCED SDF child2: %#+v\n", s2)
+			c.foundChild(s2)
+		} else {
+			// Automatic (default) conversion of core type to advanced type
+			//log.Printf("Found core SDF child: %#+v\n", s)
+			c.foundChild(NewSDF(s))
+		}
+		return reflectwalktinygo.SkipEntry // No more recursion TODO: implement this for all type callbacks
 	}
 
 	// Any other type is explored recursively

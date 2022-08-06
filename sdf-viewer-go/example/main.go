@@ -6,8 +6,6 @@ import (
 	"math"
 )
 
-// BUILD COMMAND IS IN `func main()`
-
 //export init
 func init() {
 	// This is the only function you need to call to initialize the SDF Viewer.
@@ -37,7 +35,7 @@ type SampleSDF struct {
 	changed      bool    // Whether any param changed, affecting the whole SDF
 }
 
-func (s *SampleSDF) BoundingBox() [2][3]float32 {
+func (s *SampleSDF) AABB() [2][3]float32 {
 	return [2][3]float32{{-1, -1, -1}, {1, 1, 1}}
 }
 
@@ -97,7 +95,7 @@ func (s *SampleSDF) Changed() sdfviewergo.ChangedAABB {
 	s.changed = false
 	return sdfviewergo.ChangedAABB{
 		Changed: changed,
-		AABB:    s.BoundingBox(),
+		AABB:    s.AABB(),
 	}
 }
 

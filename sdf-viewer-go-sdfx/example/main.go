@@ -1,13 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	sdfviewergo "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go"
 	sdfviewergosdfx "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdfx"
 	. "github.com/deadsy/sdfx/sdf"
+	"math"
 )
-
-// BUILD COMMAND IS IN `func main()`
 
 //export init
 func init() {
@@ -33,7 +33,44 @@ func sceneSDF() sdfviewergo.SDF {
 	sdfxSDF = Difference3D(sdfxSDF, cyl2rot)
 
 	// Complex scene:
-	//sdfxSDF = Difference3D(additive(), subtractive())
+	// Use some advanced features of the SDF Viewer that enhance the core SDF interface (that would also work by itself).
+	mainBody := outerShell()
+	bodyAdvancedSDF := sdfviewergosdfx.NewSDF(mainBody)
+	customMaterialFunc := func(point [3]float32, sample *sdfviewergo.SDFSample) {
+		// Make any custom pattern on sample.Color
+		sample.Color = [3]float32{ // FIXME: Broken colors?
+			float32(0.1 + 0.1*math.Sin(float64(point[0]/10))),
+			float32(0.1 + 0.1*math.Cos(float64(point[1]/10))),
+			float32(0.1 + 0.1*math.Sin(float64(point[2]/10))),
+		}
+	}
+	makeMaterialParam := func(materialValue string) sdfviewergo.SDFParam {
+		return sdfviewergo.SDFParam{
+			ID:          0,
+			Name:        "Material",
+			Kind:        sdfviewergo.SDFParamKindString{Values: []string{"Default", "Custom"}},
+			Value:       materialValue,
+			Description: "The material to use for this SDF object.",
+		}
+	}
+	bodyAdvancedSDF.ParametersList = []sdfviewergo.SDFParam{makeMaterialParam("Default")}
+	bodyAdvancedSDF.MaterialFunc = nil
+	bodyAdvancedSDF.SetParameters = func(paramId uint32, value sdfviewergo.SDFParamValue) error {
+		if paramId == 0 {
+			materialValue := value.(string)
+			bodyAdvancedSDF.ParametersList = []sdfviewergo.SDFParam{makeMaterialParam(materialValue)}
+			if materialValue == "Default" {
+				bodyAdvancedSDF.MaterialFunc = nil
+			} else {
+				bodyAdvancedSDF.MaterialFunc = customMaterialFunc
+			}
+			bodyAdvancedSDF.ChangedAABB.Changed = true
+			bodyAdvancedSDF.ChangedAABB.AABB = bodyAdvancedSDF.AABB()
+			return nil
+		}
+		return errors.New("unsupported parameter")
+	}
+	sdfxSDF = Difference3D(bodyAdvancedSDF, subtractive())
 
 	return sdfviewergosdfx.NewSDF(sdfxSDF)
 }
@@ -146,14 +183,6 @@ func outerShell() SDF3 {
 	t := phoneT + wallT
 	s2d := Box2D(V2{X: w, Y: h}, r)
 	return Extrude3D(s2d, t)
-}
-
-//-----------------------------------------------------------------------------
-
-func additive() SDF3 {
-	return Union3D(
-		outerShell(),
-	)
 }
 
 //-----------------------------------------------------------------------------

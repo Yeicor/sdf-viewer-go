@@ -1,0 +1,38 @@
+name: Build and publish demos
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write # Required to upload artifacts to releases (and pushing the version update)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - uses: acifani/setup-tinygo@v1
+        with:
+          tinygo-version: 0.25.0
+      - run: mkdir -p public
+
+      - name: Build sdf-viewer-go/example
+        run: |
+          cd $GITHUB_WORKSPACE/sdf-viewer-go/example
+          tinygo build -o ../../public/sdf-viewer-go.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
+
+      - name: Build sdf-viewer-go-sdfx/example
+        run: |
+          cd $GITHUB_WORKSPACE/sdf-viewer-go-sdfx/example
+          tinygo build -o ../../public/sdf-viewer-go-sdfx.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
+
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: JamesIves/github-pages-deploy-action@v4.4.0
+        with:
+          branch: gh-pages
+          folder: public

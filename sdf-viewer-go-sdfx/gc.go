@@ -4,6 +4,7 @@ package sdf_viewer_go_sdfx
 
 import (
 	"reflect"
+	"strconv"
 	"unsafe"
 )
 
@@ -32,6 +33,16 @@ func getUnexportedField(field reflect.Value, unsafeAddr unsafe.Pointer) reflect.
 	return reflect.NewAt(field.Type(), unsafeAddr).Elem()
 }
 
+var nameToNextIndex = map[string]int{}
+
 func nameOfType(kind reflect.Value, _ uintptr) string {
-	return kind.Type().String()
+	tp := kind.Type().String()
+	// Unique name of the type (avoid collisions)
+	if val, ok := nameToNextIndex[tp]; ok {
+		nameToNextIndex[tp] = val + 1
+		tp += "_" + strconv.Itoa(val)
+	} else {
+		nameToNextIndex[tp] = 1
+	}
+	return tp
 }

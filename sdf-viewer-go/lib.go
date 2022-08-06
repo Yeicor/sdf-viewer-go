@@ -17,9 +17,9 @@ func SetRootSDF(sdf SDF) {
 // SDF provides access to the Signed Distance Function data. Keep in sync with the SDF Viewer app.
 // Comments may be outdated, so check the original SDF Viewer app for more details.
 type SDF interface {
-	// BoundingBox is the bounding box of the SDF. Returns the minimum and maximum coordinates of the SDF.
+	// AABB is the bounding box of the SDF. Returns the minimum and maximum coordinates of the SDF.
 	// All operations MUST be inside this bounding box.
-	BoundingBox() (aabb [2][3]float32)
+	AABB() (aabb [2][3]float32)
 
 	// Sample samples the surface at the given point. It should include the effect of all of its children
 	// and none of its parents. See `SDFSample` for more information.

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestImpl(t *testing.T, s SDF) {
+func TestImpl(_ *testing.T, s SDF) {
 	// Configure the root SDF
 	SetRootSDF(s)
 
@@ -36,7 +36,9 @@ func testSubSDF(childID uint32, times int) {
 		bounding_box(childID)
 		sample(childID, [3]float32{0, 0, 0}, false)
 		children(childID)
-		//fmt.Printf("Children[%d]: %#+v\n", childID, children(childID))
+		//for _, child := range getSDFOrPanic(childID).Children() {
+		//	fmt.Printf("Children[%d]: %#+v\n", childID, child)
+		//}
 		parameters(childID)
 		changed(childID)
 	}
