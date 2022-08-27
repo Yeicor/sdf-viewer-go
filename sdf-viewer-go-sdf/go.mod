@@ -1,4 +1,4 @@
-module github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdfx
+module github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdf
 
 go 1.18
 
@@ -10,11 +10,8 @@ replace github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-auto v1.1.0 => ../sdf-view
 require (
 	github.com/Yeicor/sdf-viewer-go/sdf-viewer-go v1.1.0
 	github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-auto v1.1.0
-	github.com/deadsy/sdfx v0.0.0-20220508165057-718104295925
+	github.com/soypat/sdf v0.0.0-20220713042432-54592899bb0e
+	gonum.org/v1/gonum v0.11.1-0.20220625074215-67f3e1dbfccc
 )
 
-require (
-	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/ojrac/opensimplex-go v1.0.2 // indirect
-	golang.org/x/image v0.0.0-20210216034530-4410531fe030 // indirect
-)
+require github.com/ojrac/opensimplex-go v1.0.2 // indirect

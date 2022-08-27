@@ -29,6 +29,11 @@ jobs:
           cd $GITHUB_WORKSPACE/sdf-viewer-go-sdfx/example
           tinygo build -o ../../public/sdf-viewer-go-sdfx.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
 
+      - name: Build sdf-viewer-go-sdf/example
+        run: |
+          cd $GITHUB_WORKSPACE/sdf-viewer-go-sdf/example
+          tinygo build -o ../../public/sdf-viewer-go-sdf.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
+
       - name: Publish
         uses: JamesIves/github-pages-deploy-action@v4.4.0
         with:

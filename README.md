@@ -5,15 +5,19 @@ This allows you to design 3D models in Go using Signed Distance Functions while 
 possible.
 Check out the [SDF Viewer App's README](https://github.com/Yeicor/sdf-viewer) for more information.
 
-It supports:
+Go modules included in this repository:
 
-- Pure Go: [example](sdf-viewer-go/example/main.go). Check out [sdf-viewer-go](sdf-viewer-go) if you want to implement
-  the API for your language or SDF library.
-- [SDFX](https://github.com/deadsy/sdfx): [example](sdf-viewer-go-sdfx/example/main.go). This connects SDFX and the Pure
-  Go API, providing automation for operations like hierarchy discovery.
+- [sdf-viewer-go](sdf-viewer-go): Pure Go implementation of the SDF Viewer
+  API. [Usage example](sdf-viewer-go/example/main.go).
+- [sdf-viewer-go-auto](sdf-viewer-go-auto): Utilities for the automatic implementation of
+  the [sdf-viewer-go](sdf-viewer-go) API.
+- [sdf-viewer-go-sdfx](sdf-viewer-go-auto): [SDFX](https://github.com/deadsy/sdfx) implementation of the SDF Viewer
+  API. [Usage example](sdf-viewer-go-auto/example/main.go).
+- [sdf-viewer-go-sdf](sdf-viewer-go-sdf): [SDF (fork of SDFX by soypat)](https://github.com/soypat/sdf)
+  implementation of the SDF Viewer API. [Usage example](sdf-viewer-go-auto/example/main.go).
 
-This project uses [TinyGo](https://tinygo.org) to build the WebAssembly binary as the Go Compiler can't export
-WebAssembly functions. This means that it won't "Be able to compile every Go program out there", but should be
+This project uses [TinyGo](https://tinygo.org) to build the WebAssembly binary (for now) as the Go Compiler can't export
+WebAssembly functions. This means that it won't "be able to compile every Go program out there", but should be
 good enough for most projects. It is also slower to build (and run) than the Go Compiler.
 
 ## Quickstart (SDFX)
@@ -90,7 +94,7 @@ Or, on a web browser with access to the local server:
 
 ## Demo: phone case
 
-This is the SDFX example generated from [this](sdf-viewer-go-sdfx/example/main.go) source file.
+This is the SDFX example generated from [this](sdf-viewer-go-auto/example/main.go) source file.
 [View it online](https://yeicor.github.io/sdf-viewer/?cliurl=https://yeicor.github.io/sdf-viewer-go/sdf-viewer-go-sdfx.wasm&envdark)
 or [download](https://yeicor.github.io/sdf-viewer-go/sdf-viewer-go-sdfx.wasm) the WebAssembly file to view it on the
 desktop app.

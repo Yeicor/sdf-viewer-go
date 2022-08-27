@@ -1,9 +1,8 @@
-package sdf_viewer_go_sdfx
+package sdf_viewer_go_auto
 
 import (
 	"github.com/Yeicor/sdf-viewer-go/sdf-viewer-go"
-	"github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdfx/reflectwalktinygo"
-	"github.com/deadsy/sdfx/sdf"
+	"github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-auto/reflectwalktinygo"
 	"reflect"
 )
 
@@ -17,8 +16,13 @@ var _ reflectwalktinygo.EnterExitWalker = &childrenCollectorWalker{}
 var _ reflectwalktinygo.PointerWalker = &childrenCollectorWalker{}
 
 type childrenCollectorWalker struct {
+	// PARAMETERS
+	sdfCoreType  reflect.Type // Type of the core SDF implementation
+	castCoreType func(interface{}) (SDFCore, bool)
+	// OUTPUT
 	// children is the list of children of the SDF that will be returned.
-	children                           []sdf_viewer_go.SDF
+	children []sdf_viewer_go.SDF
+	// TEMPORARY
 	curDepthLevel, skipEntryUntilLevel int
 }
 
@@ -93,17 +97,21 @@ func (c *childrenCollectorWalker) PointerExit(_ bool) error {
 	return nil
 }
 
-var sdfCoreType = reflect.TypeOf((*sdf.SDF3)(nil)).Elem()
-
 func (c *childrenCollectorWalker) checkValue(value reflect.Value) error {
 	// Stop recursion if a parent was already found as a child of the root node.
 	if c.skipEntryUntilLevel > 0 && c.curDepthLevel > c.skipEntryUntilLevel {
 		return nil // Ignore descendants of already found child node
 	}
 
+	// Stop recursion on invalid values.
+	if !value.IsValid() {
+
+		return nil
+	}
+
 	// Look for the core SDF implementations and register them automatically as children.
-	coreImpl, coreImplOk := interfaceAndImplementsHint(value, sdfCoreType)
-	if s, ok := coreImpl.(sdf.SDF3); coreImplOk != nil && *coreImplOk || ok {
+	coreImpl, coreImplOk := interfaceAndImplementsHint(value, c.sdfCoreType)
+	if s, ok := c.castCoreType(coreImpl); coreImplOk != nil && *coreImplOk || ok {
 		if s2, ok := s.(sdf_viewer_go.SDF); ok {
 			// Already and advanced SDF, keep it
 			//log.Printf("Found ADVANCED SDF child2: %#+v\n", s2)
@@ -111,7 +119,7 @@ func (c *childrenCollectorWalker) checkValue(value reflect.Value) error {
 		} else {
 			// Automatic (default) conversion of core type to advanced type
 			//log.Printf("Found core SDF child: %#+v\n", s)
-			c.foundChild(NewSDF(s))
+			c.foundChild(NewSDF(s, c.sdfCoreType, c.castCoreType))
 		}
 		return reflectwalktinygo.SkipEntry // No more recursion TODO: implement this for all type callbacks
 	}

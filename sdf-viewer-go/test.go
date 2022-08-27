@@ -37,7 +37,8 @@ func testSubSDF(childID uint32, times int) {
 		sample(childID, [3]float32{0, 0, 0}, false)
 		children(childID)
 		//for _, child := range getSDFOrPanic(childID).Children() {
-		//	fmt.Printf("Children[%d]: %#+v\n", childID, child)
+		//	// NOTE: Printing with %v is not supported by tinygo: https://github.com/tinygo-org/tinygo/issues/2983
+		//	fmt.Printf("Children[%d]: %s\n", childID, child.Name())
 		//}
 		parameters(childID)
 		changed(childID)

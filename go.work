@@ -2,5 +2,7 @@ go 1.18
 
 use (
 	./sdf-viewer-go
+	./sdf-viewer-go-auto
 	./sdf-viewer-go-sdfx
+	./sdf-viewer-go-sdf
 )

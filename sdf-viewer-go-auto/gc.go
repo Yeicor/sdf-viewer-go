@@ -1,6 +1,6 @@
 //go:build !tinygo
 
-package sdf_viewer_go_sdfx
+package sdf_viewer_go_auto
 
 import (
 	"reflect"
