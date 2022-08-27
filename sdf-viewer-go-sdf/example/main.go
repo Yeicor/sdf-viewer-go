@@ -56,12 +56,12 @@ func getMainModel() sdf.SDF3 {
 		panic(err)
 	}
 	// PLA scaling to thread
-	pipe = sdf.Transform3D(pipe, sdf.Scale3D(r3.Vec{plaScale, plaScale, 1}))
+	pipe = sdf.Transform3D(pipe, sdf.Scale3D(r3.Vec{X: plaScale, Y: plaScale, Z: 1}))
 	flange, err = form3.Cylinder(flangeH, flangeD/2, flangeH/8)
 	if err != nil {
 		panic(err)
 	}
-	flange = sdf.Transform3D(flange, sdf.Translate3D(r3.Vec{0, 0, -tlen / 2}))
+	flange = sdf.Transform3D(flange, sdf.Translate3D(r3.Vec{Z: -tlen / 2}))
 	union := sdf.Union3D(pipe, flange)
 	// set flange fillet
 	union.SetMin(sdf.MinPoly(2, 0.2))
@@ -71,7 +71,7 @@ func getMainModel() sdf.SDF3 {
 		panic(err)
 	}
 	pipe = sdf.Difference3D(union, hole)
-	pipe = sdf.ScaleUniform3D(pipe, 25.4) //convert to millimeters
+	//pipe = sdf.ScaleUniform3D(pipe, 25.4) //convert to millimeters
 
 	return pipe
 }
