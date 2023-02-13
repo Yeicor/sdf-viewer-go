@@ -3,6 +3,7 @@ package sdf_viewer_go_auto
 import (
 	sdfviewergoauto "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-auto"
 	"github.com/deadsy/sdfx/sdf"
+	"github.com/deadsy/sdfx/vec/v3"
 	"reflect"
 )
 
@@ -27,13 +28,13 @@ type SDFCore struct {
 }
 
 func (s *SDFCore) SDFCoreEval(p [3]float32) float32 {
-	return float32(s.SDF3.Evaluate(sdf.V3{X: float64(p[0]), Y: float64(p[1]), Z: float64(p[2])}))
+	return float32(s.SDF3.Evaluate(v3.Vec{X: float64(p[0]), Y: float64(p[1]), Z: float64(p[2])}))
 }
 
 func (s *SDFCore) SDFCoreAABB() [2][3]float32 {
 	box := s.SDF3.BoundingBox()
 	enlargeBy := box.Max.Sub(box.Min).MulScalar(0.01)
-	enlargeBy = enlargeBy.Clamp(sdf.V3{X: 2.5, Y: 2.5, Z: 2.5}, enlargeBy)
+	enlargeBy = enlargeBy.Clamp(v3.Vec{X: 2.5, Y: 2.5, Z: 2.5}, enlargeBy)
 	box = box.Enlarge(enlargeBy) // Add a bit of padding to avoid rendering artifacts
 	return [2][3]float32{
 		{float32(box.Min.X), float32(box.Min.Y), float32(box.Min.Z)},
@@ -51,7 +52,7 @@ type SDFWrapper struct {
 	*sdfviewergoauto.SDF
 }
 
-func (s *SDFWrapper) Evaluate(p sdf.V3) float64 {
+func (s *SDFWrapper) Evaluate(p v3.Vec) float64 {
 	return s.SDF.SDF.(*SDFCore).SDF3.Evaluate(p)
 }
 

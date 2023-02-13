@@ -6,6 +6,8 @@ import (
 	sdfviewergo "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go"
 	sdfviewergosdfx "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdfx"
 	. "github.com/deadsy/sdfx/sdf"
+	v2 "github.com/deadsy/sdfx/vec/v2"
+	v3 "github.com/deadsy/sdfx/vec/v3"
 	"math"
 )
 
@@ -25,7 +27,7 @@ func main() {
 func sceneSDF() sdfviewergo.SDF {
 
 	// Simple scene:
-	box, _ := Box3D(V3{X: 1., Y: 1., Z: 1.}, 0.25)
+	box, _ := Box3D(v3.Vec{X: 1., Y: 1., Z: 1.}, 0.25)
 	cyl, _ := Cylinder3D(1.5, 0.25, 0.25)
 	sdfxSDF := Union3D(box, cyl)
 	cyl2, _ := Cylinder3D(1.5, 0.25, 0.25)
@@ -105,23 +107,23 @@ var wallT = 3.0
 //-----------------------------------------------------------------------------
 
 func phoneBody() SDF3 {
-	s2d := Box2D(V2{X: phoneW, Y: phoneH}, phoneR)
+	s2d := Box2D(v2.Vec{X: phoneW, Y: phoneH}, phoneR)
 	s3d := Extrude3D(s2d, phoneT)
-	m := Translate3d(V3{Z: wallT / 2.0})
+	m := Translate3d(v3.Vec{Z: wallT / 2.0})
 	return Transform3D(s3d, m)
 }
 
 func cameraHole() SDF3 {
-	s2d := Box2D(V2{X: cameraW, Y: cameraH}, cameraR)
+	s2d := Box2D(v2.Vec{X: cameraW, Y: cameraH}, cameraR)
 	s3d := Extrude3D(s2d, wallT+phoneT)
-	m := Translate3d(V3{X: cameraXofs, Y: cameraYofs})
+	m := Translate3d(v3.Vec{X: cameraXofs, Y: cameraYofs})
 	return Transform3D(s3d, m)
 }
 
 func speakerHole() SDF3 {
-	s2d := Box2D(V2{X: speakerW, Y: speakerH}, speakerR)
+	s2d := Box2D(v2.Vec{X: speakerW, Y: speakerH}, speakerR)
 	s3d := Extrude3D(s2d, wallT+phoneT)
-	m := Translate3d(V3{X: speakerXofs, Y: speakerYofs})
+	m := Translate3d(v3.Vec{X: speakerXofs, Y: speakerYofs})
 	return Transform3D(s3d, m)
 }
 
@@ -135,9 +137,9 @@ func holeLeft(length, yofs, zofs float64) SDF3 {
 	xofs := -(phoneW + wallT) / 2.0
 	yofs = (phoneH-length)/2.0 - yofs
 	zofs = phoneT + ((phoneT + wallT) / 2.0) - zofs
-	s2d := Box2D(V2{X: w, Y: length}, holeR)
+	s2d := Box2D(v2.Vec{X: w, Y: length}, holeR)
 	s3d := Extrude3D(s2d, wallT)
-	m := Translate3d(V3{X: xofs, Y: yofs, Z: zofs}).Mul(RotateY(DtoR(90)))
+	m := Translate3d(v3.Vec{X: xofs, Y: yofs, Z: zofs}).Mul(RotateY(DtoR(90)))
 	return Transform3D(s3d, m)
 }
 
@@ -146,9 +148,9 @@ func holeRight(length, yofs, zofs float64) SDF3 {
 	xofs := (phoneW + wallT) / 2.0
 	yofs = (phoneH-length)/2.0 - yofs
 	zofs = phoneT + ((phoneT + wallT) / 2.0) - zofs
-	s2d := Box2D(V2{X: w, Y: length}, holeR)
+	s2d := Box2D(v2.Vec{X: w, Y: length}, holeR)
 	s3d := Extrude3D(s2d, wallT)
-	m := Translate3d(V3{X: xofs, Y: yofs, Z: zofs}).Mul(RotateY(DtoR(90)))
+	m := Translate3d(v3.Vec{X: xofs, Y: yofs, Z: zofs}).Mul(RotateY(DtoR(90)))
 	return Transform3D(s3d, m)
 }
 
@@ -157,9 +159,9 @@ func holeTop(length, xofs, zofs float64) SDF3 {
 	xofs = -(phoneW-length)/2.0 + xofs
 	yofs := (phoneH + wallT) / 2.0
 	zofs = phoneT + ((phoneT + wallT) / 2.0) - zofs
-	s2d := Box2D(V2{X: length, Y: w}, holeR)
+	s2d := Box2D(v2.Vec{X: length, Y: w}, holeR)
 	s3d := Extrude3D(s2d, wallT)
-	m := Translate3d(V3{X: xofs, Y: yofs, Z: zofs}).Mul(RotateX(DtoR(90)))
+	m := Translate3d(v3.Vec{X: xofs, Y: yofs, Z: zofs}).Mul(RotateX(DtoR(90)))
 	return Transform3D(s3d, m)
 }
 
@@ -168,9 +170,9 @@ func holeBottom(length, xofs, zofs float64) SDF3 {
 	xofs = -(phoneW-length)/2.0 + xofs
 	yofs := -(phoneH + wallT) / 2.0
 	zofs = phoneT + ((phoneT + wallT) / 2.0) - zofs
-	s2d := Box2D(V2{X: length, Y: w}, holeR)
+	s2d := Box2D(v2.Vec{X: length, Y: w}, holeR)
 	s3d := Extrude3D(s2d, wallT)
-	m := Translate3d(V3{X: xofs, Y: yofs, Z: zofs}).Mul(RotateX(DtoR(90)))
+	m := Translate3d(v3.Vec{X: xofs, Y: yofs, Z: zofs}).Mul(RotateX(DtoR(90)))
 	return Transform3D(s3d, m)
 }
 
@@ -181,7 +183,7 @@ func outerShell() SDF3 {
 	h := phoneH + (2.0 * wallT)
 	r := phoneR + wallT
 	t := phoneT + wallT
-	s2d := Box2D(V2{X: w, Y: h}, r)
+	s2d := Box2D(v2.Vec{X: w, Y: h}, r)
 	return Extrude3D(s2d, t)
 }
 

@@ -1,7 +1,0 @@
-github.com/ojrac/opensimplex-go v1.0.2 h1:l4vs0D+JCakcu5OV0kJ99oEaWJfggSc9jiLpxaWvSzs=
-github.com/ojrac/opensimplex-go v1.0.2/go.mod h1:NwbXFFbXcdGgIFdiA7/REME+7n/lOf1TuEbLiZYOWnM=
-github.com/soypat/sdf v0.0.0-20220713042432-54592899bb0e h1:UeYk4Zaxn99dYc989MeMYNdllD93TXxNMw5ONSH5Ebw=
-github.com/soypat/sdf v0.0.0-20220713042432-54592899bb0e/go.mod h1:Bpbgg04u7pjvFZLQhFLHURrq0f/5u7fMTQ4dYDYwlUU=
-golang.org/x/exp v0.0.0-20220613132600-b0d781184e0d h1:vtUKgx8dahOomfFzLREU8nSv25YHnTgLBn4rDnWZdU0=
-gonum.org/v1/gonum v0.11.1-0.20220625074215-67f3e1dbfccc h1:ADX7LJ8SknE89dXBcPhZGGV60cMUzqB9XcaNKuHZxy4=
-gonum.org/v1/gonum v0.11.1-0.20220625074215-67f3e1dbfccc/go.mod h1:fSG4YDCxxUZQJ7rKsQrj0gMOg00Il0Z96/qMA4bVQhA=
