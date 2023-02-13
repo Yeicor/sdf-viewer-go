@@ -24,10 +24,10 @@ jobs:
           cd $GITHUB_WORKSPACE/sdf-viewer-go/example
           tinygo build -o ../../public/sdf-viewer-go.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
 
-      - name: Build sdf-viewer-go-sdfx/example
-        run: |
-          cd $GITHUB_WORKSPACE/sdf-viewer-go-sdfx/example
-          tinygo build -o ../../public/sdf-viewer-go-sdfx.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
+#      - name: Build sdf-viewer-go-sdfx/example # SDFX now depends on encoding/xml, which is not supported by TinyGo
+#        run: |
+#          cd $GITHUB_WORKSPACE/sdf-viewer-go-sdfx/example
+#          tinygo build -o ../../public/sdf-viewer-go-sdfx.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
 
       - name: Build sdf-viewer-go-sdf/example
         run: |
