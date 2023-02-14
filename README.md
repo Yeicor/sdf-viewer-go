@@ -28,37 +28,40 @@ Write the following `main.go` file:
 package main
 
 import (
-	sdfviewergo "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go"
-	sdfviewergosdfx "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdfx"
-	. "github.com/deadsy/sdfx/sdf"
+  "fmt"
+  sdfviewergo "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go"
+  sdfviewergosdfx "github.com/Yeicor/sdf-viewer-go/sdf-viewer-go-sdfx"
+  . "github.com/deadsy/sdfx/sdf"
+  v3 "github.com/deadsy/sdfx/vec/v3"
 )
 
 //export init
 func init() {
-	// This is the only function you need to call to initialize the SDF Viewer.
-	sdfviewergo.SetRootSDF(sceneSDF())
+  // This is the only function you need to call to initialize the SDF Viewer.
+  sdfviewergo.SetRootSDF(sceneSDF())
 }
 
-//placeholder main to allow compile
+//placeholder main to allow compilation
 func main() {
-	fmt.Println("This is not an executable. Compile this with `" +
-		"tinygo build -o example.wasm -target wasi -opt 2 -x -no-debug ." +
-		"` and use the SDF Viewer app (github.com/Yeicor/sdf-viewer) to visualize the SDF.")
+  fmt.Println("This is not an executable. Compile this with `" +
+          "tinygo build -o example.wasm -target wasi -opt 2 -x -no-debug ." +
+          "` and use the SDF Viewer app (github.com/Yeicor/sdf-viewer) to visualize the SDF.")
 }
 
 // sceneSDF returns the root SDF of the scene.
 func sceneSDF() sdfviewergo.SDF {
 
-	// Simple scene:
-	box, _ := Box3D(V3{X: 1., Y: 1., Z: 1.}, 0.25)
-	cyl, _ := Cylinder3D(1.5, 0.25, 0.25)
-	sdfxSDF := Union3D(box, cyl)
-	cyl2, _ := Cylinder3D(1.5, 0.25, 0.25)
-	cyl2rot := Transform3D(cyl2, RotateY(DtoR(90)))
-	sdfxSDF = Difference3D(sdfxSDF, cyl2rot)
+  // Simple scene:
+  box, _ := Box3D(v3.Vec{X: 1., Y: 1., Z: 1.}, 0.25)
+  cyl, _ := Cylinder3D(1.5, 0.25, 0.25)
+  sdfxSDF := Union3D(box, cyl)
+  cyl2, _ := Cylinder3D(1.5, 0.25, 0.25)
+  cyl2rot := Transform3D(cyl2, RotateY(DtoR(90)))
+  sdfxSDF = Difference3D(sdfxSDF, cyl2rot)
 
-	return sdfviewergosdfx.NewSDF(sdfxSDF)
+  return sdfviewergosdfx.NewSDF(sdfxSDF)
 }
+
 ```
 
 The build command is:
