@@ -39,6 +39,13 @@ func init() {
 	sdfviewergo.SetRootSDF(sceneSDF())
 }
 
+//placeholder main to allow compile
+func main() {
+	fmt.Println("This is not an executable. Compile this with `" +
+		"tinygo build -o example.wasm -target wasi -opt 2 -x -no-debug ." +
+		"` and use the SDF Viewer app (github.com/Yeicor/sdf-viewer) to visualize the SDF.")
+}
+
 // sceneSDF returns the root SDF of the scene.
 func sceneSDF() sdfviewergo.SDF {
 
