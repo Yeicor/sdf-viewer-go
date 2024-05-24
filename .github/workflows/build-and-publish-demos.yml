@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
-      - uses: acifani/setup-tinygo@v1
+      - uses: acifani/setup-tinygo@v2
       - run: mkdir -p public
 
       - name: Build sdf-viewer-go/example
