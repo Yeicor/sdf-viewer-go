@@ -87,7 +87,7 @@ Set up a server process that will automatically build the WebAssembly file
 when the Go file changes, and send the updated file to the SDF Viewer App:
 
 ```shell
-sdf-viewer server -s relative/path/to/example.wasm -w relative/path/to/main.go -b /bin/sh -b \-c -b "cd relative/path/to/ && tinygo build -o example.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic ."
+sdf-viewer server -s relative/path/to/example.wasm -w relative/path/to/main.go -b /bin/sh -b \-c -b "cd relative/path/to/ && tinygo build -o example.wasm -target wasi -opt 2 -x -no-debug ."
 ```
 
 Connect the app to this server process:
