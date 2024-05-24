@@ -20,17 +20,17 @@ jobs:
       - name: Build sdf-viewer-go/example
         run: |
           cd $GITHUB_WORKSPACE/sdf-viewer-go/example
-          tinygo build -o ../../public/sdf-viewer-go.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
+          tinygo build -o ../../public/sdf-viewer-go.wasm -target wasi -opt 2 -x -no-debug .
 
       - name: Build sdf-viewer-go-sdfx/example
         run: |
           cd $GITHUB_WORKSPACE/sdf-viewer-go-sdfx/example
-          tinygo build -o ../../public/sdf-viewer-go-sdfx.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
+          tinygo build -o ../../public/sdf-viewer-go-sdfx.wasm -target wasi -opt 2 -x -no-debug .
 
       - name: Build sdf-viewer-go-sdf/example
         run: |
           cd $GITHUB_WORKSPACE/sdf-viewer-go-sdf/example
-          tinygo build -o ../../public/sdf-viewer-go-sdf.wasm -target wasi -opt 2 -x -no-debug -wasm-abi generic .
+          tinygo build -o ../../public/sdf-viewer-go-sdf.wasm -target wasi -opt 2 -x -no-debug .
 
       - name: Publish
         uses: JamesIves/github-pages-deploy-action@v4.4.0
