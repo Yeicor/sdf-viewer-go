@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v5
-      - uses: acifani/setup-tinygo@v2
+      - uses: actions/setup-go@v3
+      - uses: acifani/setup-tinygo@v5
       - run: mkdir -p public
 
       - name: Build sdf-viewer-go/example
