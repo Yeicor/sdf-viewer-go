@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  pull_request: {}
 
 permissions:
   contents: write # Required to upload artifacts to releases (and pushing the version update)
@@ -34,6 +35,7 @@ jobs:
 
       - name: Publish
         uses: JamesIves/github-pages-deploy-action@v4.4.0
+        if: github.ref == 'refs/heads/main'
         with:
           branch: gh-pages
           folder: public
