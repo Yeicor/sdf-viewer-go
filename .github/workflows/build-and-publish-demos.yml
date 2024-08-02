@@ -36,7 +36,7 @@ jobs:
           tinygo build -o ../../public/sdf-viewer-go-sdf.wasm -target wasi -opt 2 -x -no-debug .
 
       - name: Publish
-        uses: JamesIves/github-pages-deploy-action@v4.4.0
+        uses: JamesIves/github-pages-deploy-action@v4.6.3
         if: github.ref == 'refs/heads/main'
         with:
           branch: gh-pages
