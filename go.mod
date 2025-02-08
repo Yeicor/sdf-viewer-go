@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.23.5
 
 require (
-	github.com/deadsy/sdfx v0.0.0-20241207221224-4203c70da4f6
+	github.com/deadsy/sdfx v0.0.0-20250127165859-030b425ef91c
 	github.com/ojrac/opensimplex-go v1.0.2
 	github.com/soypat/sdf v0.0.0-20240812015519-6596a10e8743
 	gonum.org/v1/gonum v0.15.1

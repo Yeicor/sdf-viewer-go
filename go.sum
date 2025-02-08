@@ -17,6 +17,8 @@ github.com/deadsy/sdfx v0.0.0-20240627135407-f3e72b4570df h1:zmEuk6z8m9lRlmMA2iO
 github.com/deadsy/sdfx v0.0.0-20240627135407-f3e72b4570df/go.mod h1:2LNOH/jLrcH50rNp9kUn2d+0HZYzAleYvV3Boc+HF3k=
 github.com/deadsy/sdfx v0.0.0-20241207221224-4203c70da4f6 h1:Ge1u9TpXwEbcW3xsZDQGT50p5tg4F44Mw/+H0qv4AnY=
 github.com/deadsy/sdfx v0.0.0-20241207221224-4203c70da4f6/go.mod h1:3XUE+TqzGyJdYrTkgQ4wg2EdUYG6x14Uvyto5FspsZo=
+github.com/deadsy/sdfx v0.0.0-20250127165859-030b425ef91c h1:sGsfyS1Q+9PDA9f10h3QZRv/M87rnP95LAHMu4hTb2k=
+github.com/deadsy/sdfx v0.0.0-20250127165859-030b425ef91c/go.mod h1:3XUE+TqzGyJdYrTkgQ4wg2EdUYG6x14Uvyto5FspsZo=
 github.com/dhconnelly/rtreego v1.1.0/go.mod h1:SDozu0Fjy17XH1svEXJgdYq8Tah6Zjfa/4Q33Z80+KM=
 github.com/dhconnelly/rtreego v1.2.0 h1:LWhGPhw+iGuhg8hmHA/H8WV60qKtzecOjii0FMevGlk=
 github.com/dhconnelly/rtreego v1.2.0/go.mod h1:SDozu0Fjy17XH1svEXJgdYq8Tah6Zjfa/4Q33Z80+KM=
