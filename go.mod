@@ -2,7 +2,7 @@ module github.com/Yeicor/sdf-viewer-go
 
 go 1.22
 
-toolchain go1.23.5
+toolchain go1.23.6
 
 require (
 	github.com/deadsy/sdfx v0.0.0-20241207221224-4203c70da4f6
